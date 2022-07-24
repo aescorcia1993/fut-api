@@ -18,8 +18,8 @@ public class playerModel {
 
     private String name;
     private String position;
-    private String nationality;
-    private String team;
+    private int nation;
+    private int club;
 
 }
 

@@ -1,11 +1,23 @@
 package com.example.demo.controllers;
 
 import com.example.demo.models.playerModel;
+import com.example.demo.models.playerPageModel;
 import com.example.demo.services.playerService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -30,4 +42,58 @@ public class playerController {
         return this.playerService.findUserProfileById(id);
     }
 
+    @GetMapping("/updateAllDataBase")
+    public playerPageModel updateAllDataBase() throws IOException, InterruptedException, URISyntaxException {
+       //Consulting how many pages does the API have?
+        String url = "https://futdb.app/api/players";
+        URI uri;
+
+        uri = new URIBuilder(URI.create(url))
+                .addParameter("page", "1")
+                .addParameter("limit", "20")
+                .build();
+
+        HttpClient client =  HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .header("accept","application/json")
+                .header("X-AUTH-TOKEN","7d16a9e7-2e7c-457f-8537-d2a81fbc550f")
+                .uri(uri)
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // parse JSON
+        ObjectMapper mapper = new ObjectMapper();
+        playerPageModel answer = mapper.readValue(response.body(), playerPageModel.class);
+
+//      posts.forEach(post -> {
+//             System.out.println(post.toString());
+//         });
+//      posts.forEach(System.out::println);
+        return answer;
+    }
+
+    @GetMapping("/testJson")
+    public String testJson() throws IOException, InterruptedException {
+        //Consulting how many pages does the API have?
+        String url_test = "https://jsonplaceholder.typicode.com/posts";
+        HttpClient client =  HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .header("accept","application/json")
+                .uri(URI.create(url_test))
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // parse JSON
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<Post> posts = mapper.readValue(response.body(), new TypeReference<>() {});
+
+        posts.forEach(post -> {
+            System.out.println(post.toString());
+        });
+        posts.forEach(System.out::println);
+        return "Ok";
+    }
 }
