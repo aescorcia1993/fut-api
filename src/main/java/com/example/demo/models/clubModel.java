@@ -7,11 +7,11 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "nations")
+@Table(name = "clubs")
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class nationModel {
+public class clubModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

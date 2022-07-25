@@ -1,8 +1,8 @@
 package com.example.demo.controllers;
 
-import com.example.demo.models.nationModel;
-import com.example.demo.models.nationPageModel;
-import com.example.demo.services.nationService;
+import com.example.demo.models.clubModel;
+import com.example.demo.models.clubPageModel;
+import com.example.demo.services.clubService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,32 +20,32 @@ import java.util.Optional;
 
 
 @RestController
-@RequestMapping("api/v1/nation")
-public class nationController {
+@RequestMapping("/api/v1/club")
+public class clubController {
     @Autowired
-    nationService nationService;
+    clubService clubService;
 
     @GetMapping("/findAll")
-    public ArrayList<nationModel> getAllNations(){
-        return nationService.findAll();
+    public ArrayList<clubModel> getAllNations(){
+        return clubService.findAll();
     }
 
     @PostMapping("/save")
-    public nationModel saveNation(@RequestBody nationModel nation){
-        return this.nationService.save(nation);
+    public clubModel saveNation(@RequestBody clubModel nation){
+        return this.clubService.save(nation);
     }
 
     @GetMapping( path = "findById/{id}")
-    public Optional<nationModel> findNationById(@PathVariable("id") Long id) {
-        return this.nationService.findUserProfileById(id);
+    public Optional<clubModel> findNationById(@PathVariable("id") Long id) {
+        return this.clubService.findUserProfileById(id);
     }
 
-    @GetMapping("/updateAllNations")
+    @GetMapping("/updateAllClubs")
     public String updateAllNations() throws IOException, InterruptedException, URISyntaxException {
         //Consulting how many pages does the API have?
-        String url = "https://futdb.app/api/nations";
+        String url = "https://futdb.app/api/clubs";
         URI uri;
-        for (int i=1; i < 9; i ++){
+        for (int i=1; i < 34; i ++){
             uri = new URIBuilder(URI.create(url))
                     .addParameter("page", String.valueOf(i))
                     .addParameter("limit", "20")
@@ -62,14 +62,14 @@ public class nationController {
 
             // parse JSON
             ObjectMapper mapper = new ObjectMapper();
-            nationPageModel answer = mapper.readValue(response.body(), nationPageModel.class);
+            clubPageModel answer = mapper.readValue(response.body(), clubPageModel.class);
 
-            List<nationModel> nations = answer.items;
-            this.nationService.saveAllNations(nations);
+            List<clubModel> nations = answer.items;
+            this.clubService.saveAllClubs(nations);
         }
 
 
-        return "Nations Updated";
+        return "Clubs Updated";
     }
 
 

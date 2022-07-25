@@ -19,19 +19,25 @@ public class playerService {
         return (ArrayList<playerModel>) playerRepository.findAll();
     }
 
-    public playerModel save(playerModel userProfile){
-        return playerRepository.save(userProfile);
+    public playerModel save(playerModel player){
+        return playerRepository.save(player);
     }
 
-    public Optional<playerModel> findUserProfileById(Long id){
+    public Optional<playerModel> findPlayerById(Long id){
         return playerRepository.findById(id);
-    }
-
-    public void borrarPorId(Long id){
-           playerRepository.deleteById(id);
     }
 
     public void saveAllPlayers(List<playerModel> players){
         playerRepository.saveAll(players);
+    }
+
+    public Optional<ArrayList<playerModel>> getPlayersWithPagination(Long page, Long limit){
+       Long pageV;
+        if (page == 1){
+            pageV = page;
+        }else{
+            pageV = (page*limit)-(limit-1);
+        }
+       return playerRepository.findByIdBetween( pageV, (pageV + limit)-1);
     }
 }
