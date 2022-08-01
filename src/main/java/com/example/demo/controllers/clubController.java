@@ -1,9 +1,10 @@
 package com.example.demo.controllers;
 
-import com.example.demo.models.clubModel;
-import com.example.demo.models.clubPageModel;
+import com.example.demo.models.*;
 import com.example.demo.services.clubService;
+import com.example.demo.services.playerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,32 +21,63 @@ import java.util.Optional;
 
 
 @RestController
-@RequestMapping("/api/v1/club")
+@RequestMapping("/api/v1/team")
 public class clubController {
     @Autowired
     clubService clubService;
 
+    @Autowired
+    playerService playerService;
+
+    @PostMapping("/")
+    public Object getPlayersByClub(@RequestBody bodyClub _body){
+        String nameLC = StringUtils.lowerCase(_body.Name);
+        Optional<ArrayList<playerModel>> players =  clubService.findPlayersByTeam(nameLC,_body.Page);
+
+        wrapperAnswer<playerModelAnswer> answer = new wrapperAnswer<>();
+        List<playerModelAnswer> foundPlayers = new ArrayList<>();
+            answer.count = players.map(List::size).orElse(0);
+            answer.count_total = players.map(List::size).orElse(0);
+            answer.page = _body.Page;
+            answer.page_total = (int) Math.ceil(players.map(List::size).orElse(0) / 20);
+            answer.items_per_page = 20;
+
+        if (players.isPresent()){
+            players.ifPresent(p -> {
+                p.forEach(l-> {
+                    playerModelAnswer _player = new playerModelAnswer();
+                    _player.setName(l.getName());
+                    _player.setNation(l.getNation().getName());
+                    _player.setPosition(l.getPosition());
+                    foundPlayers.add(_player);
+                });
+            });
+        }
+            answer.items = foundPlayers;
+        return answer;
+    }
+
     @GetMapping("/findAll")
-    public ArrayList<clubModel> getAllNations(){
+    public ArrayList<clubModel> getAllClubs(){
         return clubService.findAll();
     }
 
     @PostMapping("/save")
-    public clubModel saveNation(@RequestBody clubModel nation){
-        return this.clubService.save(nation);
+    public clubModel saveClub(@RequestBody clubModel club){
+        return this.clubService.save(club);
     }
 
     @GetMapping( path = "findById/{id}")
-    public Optional<clubModel> findNationById(@PathVariable("id") Long id) {
-        return this.clubService.findUserProfileById(id);
+    public Optional<clubModel> findClubById(@PathVariable("id") Long id) {
+        return this.clubService.findClubById(id);
     }
 
     @GetMapping("/updateAllClubs")
-    public String updateAllNations() throws IOException, InterruptedException, URISyntaxException {
+    public String updateAllClub() throws IOException, InterruptedException, URISyntaxException {
         //Consulting how many pages does the API have?
         String url = "https://futdb.app/api/clubs";
         URI uri;
-        for (int i=1; i < 34; i ++){
+        for (int i=1; i < 35; i ++){
             uri = new URIBuilder(URI.create(url))
                     .addParameter("page", String.valueOf(i))
                     .addParameter("limit", "20")

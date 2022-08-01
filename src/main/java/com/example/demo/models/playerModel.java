@@ -20,8 +20,22 @@ public class playerModel {
 
     private String name;
     private String position;
-    private int nation;
-    private int club;
 
+    @ManyToOne
+    @JoinColumn(name = "nation_id")
+    private nationModel nation;
+
+    @ManyToOne
+    @JoinColumn(name = "club_id")
+    private clubModel club;
+
+
+    public void setNation(int id) {
+        this.nation = new nationModel(id);
+    }
+
+    public void setClub(int id) {
+        this.club = new clubModel(id);
+    }
 }
 

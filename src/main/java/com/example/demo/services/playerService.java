@@ -15,6 +15,10 @@ public class playerService {
     @Autowired
     playerRepository playerRepository;
 
+    public Optional<ArrayList<playerModel>> findAllByClub(int clubId){
+        return playerRepository.findByClub_Id(clubId);
+    }
+
     public ArrayList<playerModel> findAll(){
         return (ArrayList<playerModel>) playerRepository.findAll();
     }
@@ -39,5 +43,9 @@ public class playerService {
             pageV = (page*limit)-(limit-1);
         }
        return playerRepository.findByIdBetween( pageV, (pageV + limit)-1);
+    }
+
+    public Optional<ArrayList<playerModel>> searchByTitleLike(){
+        return playerRepository.findByClub_IdEquals(1);
     }
 }

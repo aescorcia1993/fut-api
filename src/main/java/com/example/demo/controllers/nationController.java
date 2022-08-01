@@ -45,7 +45,7 @@ public class nationController {
         //Consulting how many pages does the API have?
         String url = "https://futdb.app/api/nations";
         URI uri;
-        for (int i=1; i < 9; i ++){
+        for (int i=1; i < 10; i ++){
             uri = new URIBuilder(URI.create(url))
                     .addParameter("page", String.valueOf(i))
                     .addParameter("limit", "20")

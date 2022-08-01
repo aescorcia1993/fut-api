@@ -75,6 +75,7 @@ public class playerController {
             playerPageModel answer = mapper.readValue(response.body(), playerPageModel.class);
 
                 List<playerModel> players = answer.items;
+
                 this.playerService.saveAllPlayers(players);
                 System.out.println("Last player page saved: "+ String.valueOf(i) );
             }catch (IOException e){
@@ -110,4 +111,6 @@ public class playerController {
         posts.forEach(System.out::println);
         return "Ok";
     }
+
+
 }
